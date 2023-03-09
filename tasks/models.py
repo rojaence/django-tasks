@@ -10,6 +10,7 @@ class Tasks(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True)
     important = models.BooleanField(default=True)
+    completed = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
