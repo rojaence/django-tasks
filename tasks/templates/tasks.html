@@ -10,10 +10,45 @@
     <h1>Tasks</h1>
     <a class="btn btn-primary" href={% url 'create_task' %}>Add task</a>
   </div>
-  <ul class="list-group">
-    {% for task in tasks %}
-      <li class="list-item-group">{{ task.title }}</li>
-    {% endfor %}
-  </ul>
+
+
+  <div class="row justify-content-center">
+    <div class="col col-md-10 col-lg-8">
+      <div class="list-group my-3">
+        {% if tasks.count > 0 %}
+          {% for task in tasks %}
+          <a href="#" class="list-group-item list-group-item-action">
+            <div class="d-flex w-100 justify-content-between">
+              <div class="v-stack">
+                <h2 class="mb-1 h5">{{ task.title }}</h2>
+                <p class="mb-1">{{ task.description }}</p>
+                <span class="badge text-bg-secondary rounded-pill">{{ task.user.username }}</span>
+              </div>
+              <div class="v-stack">
+                <div class="d-flex align-items-center gap-2">
+                  {% if task.completed %}
+                    <span class="badge text-bg-success rounded-pill">
+                      <i class="bi bi-check"></i>
+                      done
+                    </span>
+                  {% endif %}
+                  {% if task.important %}
+                    <span class="badge text-bg-warning rounded-pill">
+                      <i class="bi bi-exclamation-lg"></i>
+                      important
+                    </span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </a>
+          {% endfor %}
+        {% else %}
+          <span class="text-center">No tasks</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
 </section>
 {% endblock content %}
