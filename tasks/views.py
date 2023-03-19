@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
+from django.views.generic import ListView, CreateView
 from django.db import IntegrityError
 from .forms import CreateTaskForm
-
-# Create your views here.
+from .models import Task
 
 
 def home(request):
@@ -38,20 +38,32 @@ def signup(request):
             })
 
 
-def tasks(request):
-    return render(request, 'tasks.html')
+class TaskView(ListView):
+    model = Task
+    template_name = "tasks.html"
+    context_object_name = 'tasks'
+
+    def get_queryset(self):
+        return Task.objects.all()
 
 
 def create_task(request):
     if (request.method == 'GET'):
-      return render(request, 'create_task.html', {
-          'form': CreateTaskForm
-      })
+        return render(request, 'create_task.html', {
+            'form': CreateTaskForm
+        })
     elif (request.method == 'POST'):
-      print(request.POST)
-      return render(request, 'create_task.html', {
-          'form': CreateTaskForm
-      })
+        try:
+            form = CreateTaskForm(request.POST)
+            new_task = form.save(commit=False)
+            new_task.user = request.user
+            new_task.save()
+            return redirect("tasks")
+        except ValueError:
+            return render(request, 'create_task.html', {
+                'form': CreateTaskForm,
+                'error': 'Please provide valid data'
+            })
 
 
 def signout(request):
