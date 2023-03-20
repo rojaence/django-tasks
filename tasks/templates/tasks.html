@@ -17,7 +17,7 @@
       <div class="list-group my-3">
         {% if tasks.count > 0 %}
           {% for task in tasks %}
-          <a href="#" class="list-group-item list-group-item-action">
+          <a href={% url 'task_detail' task.id %} class="list-group-item list-group-item-action">
             <div class="d-flex w-100 justify-content-between">
               <div class="v-stack">
                 <h2 class="mb-1 h5">{{ task.title }}</h2>
