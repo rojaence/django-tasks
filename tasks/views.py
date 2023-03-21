@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
 from django.views.generic import ListView
 from django.db import IntegrityError
+from django.utils import timezone
 from .forms import TaskForm
 from .models import Task
 
@@ -79,6 +80,24 @@ def task_detail(request, task_id):
         except ValueError as e:
             error_message = str(e)
             return render(request, 'task_detail.html', {'task': task, 'form': form, 'error': error_message})
+
+
+def complete_task(request, task_id):
+    task = get_object_or_404(Task, pk=task_id, user=request.user)
+    if request.method == 'POST':
+        task.completed = not task.completed
+        if task.completed:
+            task.completed_at = timezone.now()
+        else:
+            task.completed_at = None
+        task.save()
+        return redirect('tasks')
+
+
+def delete_task(request, task_id):
+    task = get_object_or_404(Task, pk=task_id, user=request.user)
+    task.delete()
+    return redirect('tasks')
 
 
 def signout(request):

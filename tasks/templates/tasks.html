@@ -24,20 +24,36 @@
                 <p class="mb-1">{{ task.description }}</p>
                 <span class="badge text-bg-secondary rounded-pill">{{ task.user.username }}</span>
               </div>
-              <div class="v-stack">
-                <div class="d-flex align-items-center gap-2">
-                  {% if task.completed %}
-                    <span class="badge text-bg-success rounded-pill">
-                      <i class="bi bi-check"></i>
-                      done
-                    </span>
-                  {% endif %}
+              <div class="d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-end gap-2">
                   {% if task.important %}
-                    <span class="badge text-bg-warning rounded-pill">
-                      <i class="bi bi-exclamation-lg"></i>
-                      important
-                    </span>
+                  <span class="badge text-bg-warning rounded-pill">
+                    <i class="bi bi-exclamation-lg"></i>
+                    important
+                  </span>
                   {% endif %}
+                </div>
+                <div class="d-flex gap-4">
+                  <form method="POST" action={% url 'delete_task' task.id %}>
+                    {% csrf_token %}
+                    <button class="btn btn-outline-danger rounded-pill btn-sm">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                  </form>
+                  <form method='POST' action={% url 'complete_task' task.id %}>
+                    {% csrf_token %}
+                    {% if task.completed %}
+                      <button class="btn btn-success rounded-pill btn-sm">
+                        <i class="bi bi-check"></i>
+                        <span class="ms-1">done</span>
+                      </button>
+                    {% else %}
+                      <button class="btn btn-outline-success rounded-pill btn-sm">
+                        <i class="bi bi-check"></i>
+                        <span class="ms-1">done</span>
+                      </button>
+                    {% endif %}
+                  </form>
                 </div>
               </div>
             </div>
