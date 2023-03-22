@@ -2,6 +2,15 @@
   width: 100%;
 }
 
-/* .nav-item > .active {
-  color: var(--bs-info-text) !important;
-} */
+.nav-pills .nav-item .nav-link {
+  color: var(--bs-secondary-text);
+}
+
+.nav-pills .nav-item .nav-link:hover {
+  color: var(--bs-success-text);
+}
+
+.nav-pills .nav-item .nav-link.active {
+  background-color: var(--bs-success);
+  color: var(--bs-secondary-text);
+}

@@ -5,7 +5,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.views.generic import ListView
 from django.db import IntegrityError
 from django.utils import timezone
-from .forms import TaskForm
+from .forms import CreateTaskForm, UpdateTaskForm
 from .models import Task
 
 
@@ -45,24 +45,42 @@ class TaskView(ListView):
     context_object_name = 'tasks'
 
     def get_queryset(self):
-        return Task.objects.filter(user=self.request.user)
+        completed = self.request.GET.get('completed', None)
+        if completed is not None:
+            completed = completed.lower()
+            if completed == 'true':
+                return Task.objects.filter(user=self.request.user, completed=True)
+            else:
+                return Task.objects.filter(user=self.request.user, completed=False)
+        else:
+            return Task.objects.filter(user=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        completed = self.request.GET.get('completed', 'all')
+        completed = completed.lower()
+        if completed not in ['true', 'false']:
+            context['completed_filter'] = ''
+        else:
+            context['completed_filter'] = completed
+        return context
 
 
 def create_task(request):
     if (request.method == 'GET'):
         return render(request, 'create_task.html', {
-            'form': TaskForm
+            'form': CreateTaskForm
         })
     elif (request.method == 'POST'):
         try:
-            form = TaskForm(request.POST)
+            form = CreateTaskForm(request.POST)
             new_task = form.save(commit=False)
             new_task.user = request.user
             new_task.save()
             return redirect("tasks")
         except ValueError:
             return render(request, 'create_task.html', {
-                'form': TaskForm,
+                'form': CreateTaskForm,
                 'error': 'Please provide valid data'
             })
 
@@ -70,11 +88,11 @@ def create_task(request):
 def task_detail(request, task_id):
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     if request.method == 'GET':
-        form = TaskForm(instance=task)
+        form = UpdateTaskForm(instance=task)
         return render(request, 'task_detail.html', {'task': task, 'form': form})
     elif request.method == 'POST':
         try:
-            form = TaskForm(request.POST, instance=task)
+            form = UpdateTaskForm(request.POST, instance=task)
             form.save()
             return redirect('tasks')
         except ValueError as e:

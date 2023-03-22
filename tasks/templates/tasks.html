@@ -1,4 +1,5 @@
 {% extends 'layouts/base.html' %}
+{% load urlparams %}
 
 {% block title %}
 <title>Tasks</title>
@@ -6,13 +7,34 @@
 
 {% block content %}
 <section class="container">
-  <div class="d-flex flex-row align-items-center justify-content-between border-bottom">
-    <h1>Tasks</h1>
-    <a class="btn btn-primary" href={% url 'create_task' %}>Add task</a>
+  <div class="row border-bottom pb-1">
+    <div class="col-12 col-md-3">
+      <h1 class="h1 mb-0">Tasks</h1>
+    </div>
+    <div class="col-9 col-md-6">
+      <div class="d-flex justify-content-md-center">
+        <ul class="nav nav-pills">
+          <li class="nav-item">
+            <a class="nav-link {% if completed_filter == '' %}active{% endif %}" href={% url 'tasks' %}>All</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if completed_filter == 'false' %}active{% endif %}" href={% url 'tasks' %}{% urlparams completed='false' %}>Pending</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if completed_filter == 'true' %}active{% endif %}" href={% url 'tasks' %}{% urlparams completed='true' %}>Completed</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-3 col-md-3">
+      <div class="d-flex justify-content-end align-items-center">
+        <a class="btn btn-primary" href={% url 'create_task' %}>Add task</a>
+      </div>
+    </div>
   </div>
 
 
-  <div class="row justify-content-center">
+  <div class="d-flex flex-column align-items-center">
     <div class="col col-md-10 col-lg-8">
       <div class="list-group my-3">
         {% if tasks.count > 0 %}

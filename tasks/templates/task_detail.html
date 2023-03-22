@@ -28,6 +28,7 @@
         </div>
           
         {% endfor %}
+        <p><strong>Created at:</strong> {{ task.created_at }}</p>
         <div class="d-flex justify-content-end gap-3">
           <a class="btn btn-danger" href={% url 'tasks' %}>
             <i class="bi bi-x-lg"></i>
