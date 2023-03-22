@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.views.generic import ListView
 from django.db import IntegrityError
 from django.utils import timezone
@@ -39,6 +41,7 @@ def signup(request):
             })
 
 
+@method_decorator(login_required, name='dispatch')
 class TaskView(ListView):
     model = Task
     template_name = "tasks.html"
@@ -66,6 +69,7 @@ class TaskView(ListView):
         return context
 
 
+@login_required
 def create_task(request):
     if (request.method == 'GET'):
         return render(request, 'create_task.html', {
@@ -85,6 +89,7 @@ def create_task(request):
             })
 
 
+@login_required
 def task_detail(request, task_id):
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     if request.method == 'GET':
@@ -100,6 +105,7 @@ def task_detail(request, task_id):
             return render(request, 'task_detail.html', {'task': task, 'form': form, 'error': error_message})
 
 
+@login_required
 def complete_task(request, task_id):
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     if request.method == 'POST':
@@ -112,12 +118,14 @@ def complete_task(request, task_id):
         return redirect('tasks')
 
 
+@login_required
 def delete_task(request, task_id):
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     task.delete()
     return redirect('tasks')
 
 
+@login_required
 def signout(request):
     logout(request)
     return redirect('home')
