@@ -12,5 +12,5 @@
 
 .nav-pills .nav-item .nav-link.active {
   background-color: var(--bs-success);
-  color: var(--bs-secondary-text);
+  color: #fff;
 }

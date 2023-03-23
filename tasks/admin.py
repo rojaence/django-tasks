@@ -7,4 +7,5 @@ class TaskAdmin(admin.ModelAdmin):
 
 
 # Register your models here.
+admin.site.site_header = "DjangoTasks administration"
 admin.site.register(Task, TaskAdmin)
