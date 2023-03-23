@@ -1,13 +1,19 @@
-{% extends 'layouts/base.html' %}
-
+{% extends "layouts/base.html" %}
 {% block title %}
-<title>Django crud auth</title>
+  <title>Django crud auth</title>
 {% endblock title %}
-
 {% block content %}
-<h1>Home</h1>
-<section class="container">
-  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus omnis, in mollitia esse reiciendis deserunt
-    quis consequatur optio aut quod autem laudantium veniam facere eaque enim odio repudiandae accusantium delectus.</p>
-</section>
+  <h1>Home</h1>
+  <section class="container">
+    <p>This is a simple app for tasks</p>
+    {% if not user.is_authenticated %}
+      <p>
+        Please <a href={% url 'signin' %}>login</a> or <a href={% url 'signup' %}>register</a> to see the tasks page
+      </p>
+    {% else %}
+      <p>
+        To see the tasks page go to <a href={% url 'tasks' %}>Tasks</a>
+      </p>
+    {% endif %}
+  </section>
 {% endblock content %}

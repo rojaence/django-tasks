@@ -1,92 +1,91 @@
-{% extends 'layouts/base.html' %}
+{% extends "layouts/base.html" %}
 {% load urlparams %}
-
 {% block title %}
-<title>Tasks</title>
+  <title>Tasks</title>
 {% endblock title %}
-
 {% block content %}
-<section class="container">
-  <div class="row border-bottom pb-1">
-    <div class="col-12 col-md-3">
-      <h1 class="h1 mb-0">Tasks</h1>
-    </div>
-    <div class="col-9 col-md-6">
-      <div class="d-flex justify-content-md-center">
-        <ul class="nav nav-pills">
-          <li class="nav-item">
-            <a class="nav-link {% if completed_filter == '' %}active{% endif %}" href={% url 'tasks' %}>All</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if completed_filter == 'false' %}active{% endif %}" href={% url 'tasks' %}{% urlparams completed='false' %}>Pending</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% if completed_filter == 'true' %}active{% endif %}" href={% url 'tasks' %}{% urlparams completed='true' %}>Completed</a>
-          </li>
-        </ul>
+  <section class="container">
+    <div class="row border-bottom pb-1">
+      <div class="col-12 col-md-3">
+        <h1 class="h1 mb-0">Tasks</h1>
+      </div>
+      <div class="col-9 col-md-6">
+        <div class="d-flex justify-content-md-center">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link {% if completed_filter == '' %}active{% endif %}"
+                 href="{% url 'tasks' %}">All</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if completed_filter == 'false' %}active{% endif %}"
+                 href="{% url 'tasks' %}{% urlparams completed='false' %}">Pending</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% if completed_filter == 'true' %}active{% endif %}"
+                 href="{% url 'tasks' %}{% urlparams completed='true' %}">Completed</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-3 col-md-3">
+        <div class="d-flex justify-content-end align-items-center">
+          <a class="btn btn-primary" href={% url 'create_task' %}>Add task</a>
+        </div>
       </div>
     </div>
-    <div class="col-3 col-md-3">
-      <div class="d-flex justify-content-end align-items-center">
-        <a class="btn btn-primary" href={% url 'create_task' %}>Add task</a>
-      </div>
-    </div>
-  </div>
-
-
-  <div class="d-flex flex-column align-items-center">
-    <div class="col col-md-10 col-lg-8">
-      <div class="list-group my-3">
-        {% if tasks.count > 0 %}
-          {% for task in tasks %}
-          <a href={% url 'task_detail' task.id %} class="list-group-item list-group-item-action">
-            <div class="d-flex w-100 justify-content-between">
-              <div class="v-stack">
-                <h2 class="mb-1 h5">{{ task.title }}</h2>
-                <p class="mb-1">{{ task.description }}</p>
-                <span class="badge text-bg-secondary rounded-pill">{{ task.user.username }}</span>
-              </div>
-              <div class="d-flex flex-column justify-content-between">
-                <div class="d-flex justify-content-end gap-2">
-                  {% if task.important %}
-                  <span class="badge text-bg-warning rounded-pill">
-                    <i class="bi bi-exclamation-lg"></i>
-                    important
-                  </span>
-                  {% endif %}
+    <div class="d-flex flex-column align-items-center">
+      <div class="col col-md-10 col-lg-8">
+        <div class="list-group my-3">
+          {% if tasks.count > 0 %}
+            {% for task in tasks %}
+              <a href="{% url 'task_detail' task.id %}"
+                 class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                  <div class="v-stack">
+                    <h2 class="mb-1 h5">{{ task.title }}</h2>
+                    <p class="mb-1">{{ task.description }}</p>
+                    <span class="badge text-bg-secondary rounded-pill">{{ task.user.username }}</span>
+                  </div>
+                  <div class="d-flex flex-column justify-content-between">
+                    <div class="d-flex justify-content-end gap-2">
+                      {% if task.important %}
+                        <span class="badge text-bg-warning rounded-pill">
+                          <i class="bi bi-exclamation-lg"></i>
+                          important
+                        </span>
+                      {% endif %}
+                    </div>
+                    <div class="d-flex gap-4">
+                      <form method="post" action={% url 'delete_task' task.id %}>
+                        {% csrf_token %}
+                        <button class="btn btn-outline-danger rounded-pill btn-sm">
+                          <i class="bi bi-x-lg"></i>
+                        </button>
+                      </form>
+                      <form method='post' action={% url 'complete_task' task.id %}>
+                        {% csrf_token %}
+                        {% if task.completed %}
+                          <button class="btn btn-success rounded-pill btn-sm">
+                            <i class="bi bi-check"></i>
+                            <span class="ms-1">done</span>
+                          </button>
+                        {% else %}
+                          <button class="btn btn-outline-success rounded-pill btn-sm">
+                            <i class="bi bi-check"></i>
+                            <span class="ms-1">done</span>
+                          </button>
+                        {% endif %}
+                      </form>
+                    </div>
+                  </div>
                 </div>
-                <div class="d-flex gap-4">
-                  <form method="POST" action={% url 'delete_task' task.id %}>
-                    {% csrf_token %}
-                    <button class="btn btn-outline-danger rounded-pill btn-sm">
-                      <i class="bi bi-x-lg"></i>
-                    </button>
-                  </form>
-                  <form method='POST' action={% url 'complete_task' task.id %}>
-                    {% csrf_token %}
-                    {% if task.completed %}
-                      <button class="btn btn-success rounded-pill btn-sm">
-                        <i class="bi bi-check"></i>
-                        <span class="ms-1">done</span>
-                      </button>
-                    {% else %}
-                      <button class="btn btn-outline-success rounded-pill btn-sm">
-                        <i class="bi bi-check"></i>
-                        <span class="ms-1">done</span>
-                      </button>
-                    {% endif %}
-                  </form>
-                </div>
-              </div>
-            </div>
-          </a>
-          {% endfor %}
-        {% else %}
-          <span class="text-center">No tasks</span>
-        {% endif %}
+              </a>
+            {% endfor %}
+          {% else %}
+            <span class="text-center">No tasks</span>
+          {% endif %}
+        </div>
       </div>
     </div>
-  </div>
-
-</section>
+  </section>
 {% endblock content %}

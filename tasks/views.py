@@ -21,6 +21,11 @@ def signup(request):
             'form': UserCreationForm
         })
     if (request.method == 'POST'):
+        if (request.POST['username'] == '' or request.POST['password1'] == '' or request.POST['password2'] == ''):
+            return render(request, 'signup.html', {
+                'form': UserCreationForm,
+                'error': 'Please complete all fields'
+            })
         if request.POST['password1'] == request.POST['password2']:
             # Register user
             try:
@@ -39,6 +44,35 @@ def signup(request):
                 'form': UserCreationForm,
                 'error': 'Password do not match'
             })
+
+
+@login_required
+def signout(request):
+    logout(request)
+    return redirect('home')
+
+
+def signin(request):
+    if request.method == 'GET':
+        return render(request, 'signin.html', {
+            'form': AuthenticationForm
+        })
+    elif request.method == 'POST':
+        if (request.POST['username'] == '' or request.POST['password'] == ''):
+            return render(request, 'signin.html', {
+                'form': AuthenticationForm,
+                'error': 'Please complete all fields'
+            })
+        user = authenticate(
+            request, username=request.POST['username'], password=request.POST['password'])
+        if user == None:
+            return render(request, 'signin.html', {
+                'form': AuthenticationForm,
+                'error': 'Username or password is incorrect'
+            })
+        else:
+            login(request, user)
+            return redirect('tasks')
 
 
 @method_decorator(login_required, name='dispatch')
@@ -62,10 +96,10 @@ class TaskView(ListView):
         context = super().get_context_data(**kwargs)
         completed = self.request.GET.get('completed', 'all')
         completed = completed.lower()
-        if completed not in ['true', 'false']:
-            context['completed_filter'] = ''
-        else:
+        if completed in ['true', 'false']:
             context['completed_filter'] = completed
+        else:
+            context['completed_filter'] = ''
         return context
 
 
@@ -123,27 +157,3 @@ def delete_task(request, task_id):
     task = get_object_or_404(Task, pk=task_id, user=request.user)
     task.delete()
     return redirect('tasks')
-
-
-@login_required
-def signout(request):
-    logout(request)
-    return redirect('home')
-
-
-def signin(request):
-    if request.method == 'GET':
-        return render(request, 'signin.html', {
-            'form': AuthenticationForm
-        })
-    else:
-        user = authenticate(
-            request, username=request.POST['username'], password=request.POST['password'])
-        if user == None:
-            return render(request, 'signin.html', {
-                'form': AuthenticationForm,
-                'error': 'Username or password is incorrect'
-            })
-        else:
-            login(request, user)
-            return redirect('tasks')

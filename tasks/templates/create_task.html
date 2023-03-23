@@ -1,50 +1,45 @@
-{% extends 'layouts/base.html' %}
+{% extends "layouts/base.html" %}
 {% load widget_tweaks %}
-
 {% block title %}
-<title>Create Task</title>
+  <title>Create Task</title>
 {% endblock title %}
-
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col col-lg-6 mx-auto">
-      <h1 class="h2">New task</h1>
-
-      {% if error %}
-        <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
-          <i class="bi bi-exclamation-triangle-fill"></i>
-          <div>
-            {{ error }}
+  <div class="container">
+    <div class="row">
+      <div class="col col-lg-6 mx-auto">
+        <h1 class="h2">New task</h1>
+        {% if error %}
+          <div class="alert alert-danger d-flex align-items-center gap-2"
+               role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div>{{ error }}</div>
           </div>
-        </div>
-      {% endif %}
-
-      <form action={% url 'create_task' %} method="POST">
-        {% csrf_token %}
-        {% for field in form %}
-        <div class="mb-3">
-          <label for={{ field.id_for_label }}>{{ field.label_tag }}</label>
-          {% if field.widget_type == 'checkbox' %}
-            {% render_field field class="form-check-input" %}
-          {% else %}
-            {% render_field field class="form-control" %}
-          {% endif %}
-        </div>
-          
-        {% endfor %}
-        <div class="d-flex justify-content-end gap-3">
-          <a class="btn btn-danger" href={% url 'tasks' %}>
-            <i class="bi bi-x-lg"></i>
-            <span class="ms-1">Cancel</span>  
-          </a>
-          <button class="btn btn-primary">
-            <i class="bi bi-plus-lg"></i>
-            <span class="ms-1">Add</span>
-          </button>
-        </div>
-      </form>
+        {% endif %}
+        <form action={% url 'create_task' %} method="post">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-3">
+              <label for={{ field.id_for_label }}>{{ field.label_tag }}
+              </label>
+              {% if field.widget_type == 'checkbox' %}
+                {% render_field field class="form-check-input" %}
+              {% else %}
+                {% render_field field class="form-control" %}
+              {% endif %}
+            </div>
+          {% endfor %}
+          <div class="d-flex justify-content-end gap-3">
+            <a class="btn btn-danger" href={% url 'tasks' %}>
+              <i class="bi bi-x-lg"></i>
+              <span class="ms-1">Cancel</span>
+            </a>
+            <button class="btn btn-primary">
+              <i class="bi bi-plus-lg"></i>
+              <span class="ms-1">Add</span>
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-</div>
 {% endblock content %}
